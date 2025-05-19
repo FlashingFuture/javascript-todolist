@@ -4,7 +4,7 @@ import { HTTPError } from '@/utils/httpError';
 import { hashPassword } from '@/utils/password';
 import { createUser } from '../model';
 
-export const registerUser = async ({
+export const register = async ({
   userId,
   password,
   rePassword,
