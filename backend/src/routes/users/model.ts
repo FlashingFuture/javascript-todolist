@@ -1,6 +1,6 @@
 import { connection } from '@/database/mariadb';
 import type { CreatedUser } from '@/types/user';
-import type { ResultSetHeader } from 'mysql2';
+import type { ResultSetHeader, RowDataPacket } from 'mysql2';
 
 export const createUser = async (user: {
   userId: string;
@@ -16,6 +16,28 @@ export const createUser = async (user: {
     return {
       id: result.insertId,
       userId: user.userId,
+    };
+  } finally {
+    conn.release();
+  }
+};
+
+export const selectUser = async (
+  userId: string
+): Promise<{ id: number; passwordHash: string; salt: string } | null> => {
+  const sql = 'SELECT password, salt FROM users WHERE name = ?';
+  const conn = await connection.getConnection();
+  try {
+    const [rows] = await conn.query<RowDataPacket[]>(sql, [userId]);
+
+    if (!Array.isArray(rows) || rows.length === 0) {
+      return null;
+    }
+
+    return {
+      id: rows[0].id,
+      passwordHash: rows[0].password,
+      salt: rows[0].salt,
     };
   } finally {
     conn.release();

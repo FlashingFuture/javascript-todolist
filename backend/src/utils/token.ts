@@ -1,10 +1,10 @@
-import jwt from "jsonwebtoken";
+import jwt from 'jsonwebtoken';
 
 const privateKey = process.env.PRIVATE_KEY!;
 
-export function signToken(userEmail: string): string {
-  const payload = { userEmail };
-  const options: jwt.SignOptions = { expiresIn: "1h" };
+export function signToken(id: number, userId: string): string {
+  const payload = { id, userId };
+  const options: jwt.SignOptions = { expiresIn: '1h' };
   return jwt.sign(payload, privateKey, options) as string;
 }
 
