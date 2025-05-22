@@ -1,6 +1,7 @@
 import { StatusCodes } from 'http-status-codes';
 import { HTTPError } from '@/utils/httpError';
-import { LoginDTO, MessageResponse } from '@/types/user';
+import { LoginDTO } from '../types';
+import { MessageResponse } from '@/types/common';
 import { signToken } from '@/utils/token';
 import { verifyPassword } from '@/utils/password';
 import { selectUser } from '../model';
@@ -10,7 +11,6 @@ export const login = async ({
   password,
 }: LoginDTO): Promise<MessageResponse> => {
   const user = await selectUser(userId);
-
   if (!user) {
     throw new HTTPError(
       StatusCodes.UNAUTHORIZED,

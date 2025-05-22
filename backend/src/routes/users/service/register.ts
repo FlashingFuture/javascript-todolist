@@ -1,5 +1,6 @@
 import { StatusCodes } from 'http-status-codes';
-import { RegisterDTO, MessageResponse } from '@/types/user';
+import { RegisterDTO } from '../types';
+import { MessageResponse } from '@/types/common';
 import { HTTPError } from '@/utils/httpError';
 import { hashPassword } from '@/utils/password';
 import { createUser } from '../model';
