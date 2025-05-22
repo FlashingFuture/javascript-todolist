@@ -30,7 +30,7 @@ export const login = async ({
   const token = signToken(id, userId);
 
   return {
-    status: StatusCodes.CREATED,
+    status: StatusCodes.OK,
     message: '로그인 성공',
     data: {
       token,
