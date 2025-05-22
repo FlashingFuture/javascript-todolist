@@ -6,7 +6,6 @@ import { getTeamMembers as getTeamMembersService } from './service/getTeamMember
 import { registerMember as registerMemberService } from './service/registerMember';
 import { deleteTeamMember as deleteTeamMemberService } from './service/deleteTeamMember';
 import { AuthenticatedRequest } from '@/types/common';
-import { HTTPError } from '@/utils/httpError';
 import { InternalRegisterDTO } from './types';
 
 export const registerTeam = async (
@@ -86,10 +85,6 @@ export const deleteTeamMember = async (
   const ownerId = (req as AuthenticatedRequest).user!.id;
   const teamId = Number(req.params.teamId);
   const { memberId } = req.body;
-
-  if (isNaN(teamId)) throw new HTTPError(400, '올바르지 않은 팀 ID입니다.');
-  if (typeof memberId !== 'number')
-    throw new HTTPError(400, '삭제할 유저 ID가 유효하지 않습니다.');
 
   const result = await deleteTeamMemberService({ teamId, ownerId, memberId });
 
