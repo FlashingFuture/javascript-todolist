@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { signToken, verifyToken } from '@/utils/token';
+import { signToken, verifyToken } from '../../../utils/token';
 
 describe('JWT 토큰 유틸', () => {
   const id = 1;

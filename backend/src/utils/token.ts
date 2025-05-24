@@ -10,10 +10,8 @@ export function signToken(id: number, userId: string): string {
 
 export function verifyToken(token: string): any | null {
   try {
-    console.log('verify success');
     return jwt.verify(token, privateKey);
   } catch (err) {
-    console.log('verify faliure');
     return null;
   }
 }
