@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { verifyToken } from '@/utils/token';
+import { verifyToken } from '../utils/token';
 import { HTTPError } from '@/utils/httpError';
 import { AuthenticatedRequest } from '@/types/common';
 
