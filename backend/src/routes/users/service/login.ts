@@ -5,12 +5,13 @@ import { MessageResponse } from '@/types/common';
 import { signToken } from '@/utils/token';
 import { verifyPassword } from '@/utils/password';
 import { selectUser } from '../model';
+import { connection } from '@/database/mariadb';
 
 export const login = async ({
   userId,
   password,
 }: LoginDTO): Promise<MessageResponse> => {
-  const user = await selectUser(userId);
+  const user = await selectUser(connection, userId);
   if (!user) {
     throw new HTTPError(
       StatusCodes.UNAUTHORIZED,

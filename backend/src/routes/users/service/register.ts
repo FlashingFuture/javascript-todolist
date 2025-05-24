@@ -4,6 +4,7 @@ import { MessageResponse } from '@/types/common';
 import { HTTPError } from '@/utils/httpError';
 import { hashPassword } from '@/utils/password';
 import { createUser } from '../model';
+import { connection } from '@/database/mariadb';
 
 export const register = async ({
   userId,
@@ -18,7 +19,7 @@ export const register = async ({
   }
 
   const { passwordHash, salt } = hashPassword(password);
-  const createdUser = await createUser({
+  const createdUser = await createUser(connection, {
     userId,
     password: passwordHash,
     salt,
