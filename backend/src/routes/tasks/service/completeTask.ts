@@ -3,6 +3,7 @@ import { HTTPError } from '@/utils/httpError';
 import { MessageResponse } from '@/types/common';
 import { completeTeamTask, completeUserTask } from '../model';
 import { validateTeamAccess } from '@/routes/teams/service/validateTeamAccess';
+import { validateTaskAccess } from './validateTaskAccess';
 
 export const completeTaskService = async ({
   taskId,
@@ -19,6 +20,7 @@ export const completeTaskService = async ({
     await validateTeamAccess(connection, teamId, userId);
     contents = await completeTeamTask(connection, taskId, teamId);
   } else {
+    await validateTaskAccess(connection, taskId, userId);
     contents = await completeUserTask(connection, taskId, userId);
   }
 
