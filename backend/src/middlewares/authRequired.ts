@@ -1,20 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
-import { verifyToken } from '@/utils/token';
+import { signToken, verifyToken } from '@/utils/token';
 import { HTTPError } from '@/utils/httpError';
 import { AuthenticatedRequest } from '@/types/common';
+import { setAuthCookie } from '@/utils/setAuthCookie';
 
 export const authRequired =
   (required: boolean) => (req: Request, res: Response, next: NextFunction) => {
-    const authHeader = req.headers.authorization;
-
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      if (required) {
-        throw new HTTPError(401, '로그인이 필요합니다.');
-      }
-      return next();
-    }
-
-    const token = authHeader.split(' ')[1];
+    console.log(req.cookies);
+    const token = req.cookies?.todolist_token || '';
     const payload = verifyToken(token);
 
     if (!payload && required) {
@@ -23,6 +16,8 @@ export const authRequired =
 
     if (payload) {
       (req as AuthenticatedRequest).user = payload;
+      const newToken = signToken(payload.id, payload.userId);
+      setAuthCookie(res, newToken);
     }
 
     next();
