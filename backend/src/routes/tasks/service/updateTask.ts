@@ -2,6 +2,7 @@ import { updateUserTask, updateTeamTask } from '../model';
 import { connection } from '@/database/mariadb';
 import { validateTeamAccess } from '@/routes/teams/service/validateTeamAccess';
 import { MessageResponse } from '@/types/common';
+import { validateTaskAccess } from './validateTaskAccess';
 
 export const updateTaskService = async ({
   taskId,
@@ -16,6 +17,10 @@ export const updateTaskService = async ({
   contents: string;
   duration: number;
 }): Promise<MessageResponse> => {
+  if (!teamId) {
+    await validateTaskAccess(connection, taskId, userId);
+  }
+
   if (teamId) {
     await validateTeamAccess(connection, teamId, userId);
   }

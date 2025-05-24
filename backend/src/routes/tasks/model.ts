@@ -186,6 +186,7 @@ export const deleteUserTask = async (
       `DELETE FROM user_tasks WHERE id = ? AND user_id = ?`,
       [taskId, userId]
     );
+    console.log(result);
     return result.affectedRows > 0;
   } finally {
     conn.release();
@@ -203,6 +204,7 @@ export const deleteTeamTask = async (
       `DELETE FROM team_tasks WHERE id = ? AND team_id = ?`,
       [taskId, teamId]
     );
+    console.log(result);
     return result.affectedRows > 0;
   } finally {
     conn.release();

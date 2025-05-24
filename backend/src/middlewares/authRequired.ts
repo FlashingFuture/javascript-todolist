@@ -6,7 +6,6 @@ import { setAuthCookie } from '@/utils/setAuthCookie';
 
 export const authRequired =
   (required: boolean) => (req: Request, res: Response, next: NextFunction) => {
-    console.log(req.cookies);
     const token = req.cookies?.todolist_token || '';
     const payload = verifyToken(token);
 

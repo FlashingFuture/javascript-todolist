@@ -3,6 +3,7 @@ import { deleteUserTask, deleteTeamTask } from '../model';
 import { validateTeamAccess } from '@/routes/teams/service/validateTeamAccess';
 import type { MessageResponse } from '@/types/common';
 import { HTTPError } from '@/utils/httpError';
+import { validateTaskAccess } from './validateTaskAccess';
 
 export const deleteTaskService = async ({
   taskId,
@@ -18,6 +19,7 @@ export const deleteTaskService = async ({
     await validateTeamAccess(connection, teamId, userId);
     deleted = await deleteTeamTask(connection, taskId, teamId);
   } else {
+    await validateTaskAccess(connection, taskId, userId);
     deleted = await deleteUserTask(connection, taskId, userId);
   }
 
@@ -26,8 +28,7 @@ export const deleteTaskService = async ({
   }
 
   return {
-    status: 204,
+    status: 200,
     message: '할 일이 삭제되었습니다.',
   };
 };
-

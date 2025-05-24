@@ -57,7 +57,6 @@ export const deleteTask = async (
   const userId = (req as AuthenticatedRequest).user!.id;
   const taskId = Number(req.params.taskId);
   const teamId = req.query.teamId ? Number(req.query.teamId) : undefined;
-
   const result = await deleteTaskService({ taskId, userId, teamId });
 
   res.status(result.status).json({ message: result.message });
