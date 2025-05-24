@@ -2,6 +2,7 @@ import 'module-alias/register';
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 dotenv.config();
 
 import { errorHandler } from './middlewares/errorHandler';
@@ -18,6 +19,7 @@ app.use(
   })
 );
 app.use(express.json());
+app.use(cookieParser());
 app.use('/api/users', userRouter);
 app.use('/api/teams', teamRouter);
 app.use('/api/tasks', taskRouter);
