@@ -3,7 +3,7 @@ import { RegisterDTO } from '../types';
 import { MessageResponse } from '@/types/common';
 import { HTTPError } from '@/utils/httpError';
 import { hashPassword } from '@/utils/password';
-import { createUser } from '../model';
+import { insertUser } from '../model';
 import { connection } from '@/database/mariadb';
 
 export const register = async ({
@@ -19,7 +19,7 @@ export const register = async ({
   }
 
   const { passwordHash, salt } = hashPassword(password);
-  const createdUser = await createUser(connection, {
+  const createdUser = await insertUser(connection, {
     userId,
     password: passwordHash,
     salt,

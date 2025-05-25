@@ -1,18 +1,27 @@
 import { Request, Response } from 'express';
 import { AuthenticatedRequest } from '@/types/common';
-import { register } from './service/register';
-import { getTasksService } from './service/getTasks';
-import { updateTaskService } from './service/updateTask';
-import { deleteTaskService } from './service/deleteTask';
-import { completeTaskService } from './service/completeTask';
+import { createTask as createTask } from './service/createTask';
+import { getTasks as getTasks } from './service/getTasks';
+import { updateTaskService as updateTask } from './service/updateTask';
+import { deleteTask } from './service/deleteTask';
+import { completeTask } from './service/completeTask';
+import {
+  CompleteTaskDTO,
+  CreateTaskDTO,
+  DeleteTaskDTO,
+  GetTasksDTO,
+  UpdateTaskDTO,
+} from './types';
 
-export const registerTask = async (
+export const createTaskController = async (
   req: Request,
   res: Response
 ): Promise<void> => {
   const userId = (req as AuthenticatedRequest).user!.id;
   const { teamId, contents, duration } = req.body;
-  const result = await register({ userId, teamId, contents, duration });
+
+  const dto: CreateTaskDTO = { userId, teamId, contents, duration };
+  const result = await createTask(dto);
 
   res
     .status(result.status)
@@ -20,10 +29,15 @@ export const registerTask = async (
   return;
 };
 
-export const getTasks = async (req: Request, res: Response): Promise<void> => {
+export const getTasksController = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   const userId = (req as AuthenticatedRequest).user!.id;
   const teamId = req.query.teamId ? Number(req.query.teamId) : undefined;
-  const result = await getTasksService({ userId, teamId });
+
+  const dto: GetTasksDTO = { userId, teamId };
+  const result = await getTasks(dto);
 
   res
     .status(result.status)
@@ -31,18 +45,13 @@ export const getTasks = async (req: Request, res: Response): Promise<void> => {
   return;
 };
 
-export const updateTask = async (req: Request, res: Response) => {
+export const updateTaskController = async (req: Request, res: Response) => {
   const taskId = Number(req.params.taskId);
   const { contents, duration, teamId } = req.body;
   const userId = (req as AuthenticatedRequest).user!.id;
 
-  const result = await updateTaskService({
-    taskId,
-    contents,
-    duration,
-    userId,
-    teamId,
-  });
+  const dto: UpdateTaskDTO = { taskId, contents, duration, userId, teamId };
+  const result = await updateTask(dto);
 
   res
     .status(result.status)
@@ -50,19 +59,21 @@ export const updateTask = async (req: Request, res: Response) => {
   return;
 };
 
-export const deleteTask = async (
+export const deleteTaskController = async (
   req: Request,
   res: Response
 ): Promise<void> => {
   const userId = (req as AuthenticatedRequest).user!.id;
   const taskId = Number(req.params.taskId);
   const teamId = req.query.teamId ? Number(req.query.teamId) : undefined;
-  const result = await deleteTaskService({ taskId, userId, teamId });
+
+  const dto: DeleteTaskDTO = { taskId, userId, teamId };
+  const result = await deleteTask(dto);
 
   res.status(result.status).json({ message: result.message });
 };
 
-export const completeTask = async (
+export const completeTaskController = async (
   req: Request,
   res: Response
 ): Promise<void> => {
@@ -70,7 +81,8 @@ export const completeTask = async (
   const taskId = Number(req.params.taskId);
   const teamId = req.query.teamId ? Number(req.query.teamId) : undefined;
 
-  const result = await completeTaskService({ taskId, userId, teamId });
+  const dto: CompleteTaskDTO = { taskId, userId, teamId };
+  const result = await completeTask(dto);
 
   res.status(result.status).json({ message: result.message });
 };

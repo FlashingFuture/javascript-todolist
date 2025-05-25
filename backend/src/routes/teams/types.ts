@@ -21,6 +21,11 @@ export interface RegisterMemberDTO {
   newMemberId: string;
 }
 
+export interface GetTeamMembersDTO {
+  teamId: number;
+  requesterId: number;
+}
+
 export interface DeleteTeamMemberDTO {
   teamId: number;
   ownerId: number;

@@ -4,15 +4,20 @@ import { authRequired } from '@/middlewares/authRequired';
 import { registerValidator, updateTaskValidator } from './validator';
 
 const router = express.Router();
-router.post('/', authRequired(true), registerValidator, tasks.registerTask);
-router.get('/', authRequired(true), tasks.getTasks);
+router.post(
+  '/',
+  authRequired(true),
+  registerValidator,
+  tasks.createTaskController
+);
+router.get('/', authRequired(true), tasks.getTasksController);
 router.put(
   '/:taskId',
   authRequired(true),
   updateTaskValidator,
-  tasks.updateTask
+  tasks.updateTaskController
 );
-router.delete('/:taskId', authRequired(true), tasks.deleteTask);
-router.post('/:taskId', authRequired(true), tasks.completeTask);
+router.delete('/:taskId', authRequired(true), tasks.deleteTaskController);
+router.post('/:taskId', authRequired(true), tasks.completeTaskController);
 
 export default router;

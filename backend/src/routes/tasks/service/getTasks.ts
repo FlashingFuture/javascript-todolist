@@ -1,16 +1,12 @@
 import { MessageResponse } from '@/types/common';
-import { SelectTaskDTO } from '../types';
+import { GetTasksDTO } from '../types';
 import { selectTeamTasks, selectUserTasks } from '../model';
 import { connection } from '@/database/mariadb';
-import { validateTeamAccess } from '@/routes/teams/service/validateTeamAccess';
 
-export const getTasksService = async ({
+export const getTasks = async ({
   userId,
   teamId,
-}: SelectTaskDTO): Promise<MessageResponse> => {
-  if (teamId) {
-    await validateTeamAccess(connection, teamId, userId);
-  }
+}: GetTasksDTO): Promise<MessageResponse> => {
   const tasks = teamId
     ? await selectTeamTasks(connection, teamId)
     : await selectUserTasks(connection, userId);

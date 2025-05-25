@@ -1,14 +1,21 @@
 import { Request, Response } from 'express';
-import { registerTeam as registerTeamService } from './service/registerTeam';
+import { createTeam } from './service/createTeam';
 import { getTeams } from './service/getTeams';
-import { deleteTeam as deleteTeamService } from './service/deleteTeam';
-import { getTeamMembers as getTeamMembersService } from './service/getTeamMembers';
-import { registerMember as registerMemberService } from './service/registerMember';
-import { deleteTeamMember as deleteTeamMemberService } from './service/deleteTeamMember';
+import { deleteTeam } from './service/deleteTeam';
+import { getTeamMembers } from './service/getTeamMembers';
+import { registerMember } from './service/registerMember';
+import { deleteTeamMember } from './service/deleteTeamMember';
 import { AuthenticatedRequest } from '@/types/common';
-import { InternalRegisterDTO } from './types';
+import {
+  InternalRegisterDTO,
+  GetTeamsDTO,
+  DeleteTeamDTO,
+  RegisterMemberDTO,
+  GetTeamMembersDTO,
+  DeleteTeamMemberDTO,
+} from './types';
 
-export const registerTeam = async (
+export const createTeamController = async (
   req: Request,
   res: Response
 ): Promise<void> => {
@@ -16,54 +23,56 @@ export const registerTeam = async (
   const ownerId = (req as AuthenticatedRequest).user!.id;
 
   const dto: InternalRegisterDTO = { teamId, ownerId };
-  const result = await registerTeamService(dto);
+  const result = await createTeam(dto);
 
   res
     .status(result.status)
     .json({ message: result.message, data: result.data });
-  return;
 };
 
-export const getUsersTeams = async (
+export const getTeamsController = async (
   req: Request,
   res: Response
 ): Promise<void> => {
   const userId = (req as AuthenticatedRequest).user!.id;
-  const result = await getTeams({ userId });
+
+  const dto: GetTeamsDTO = { userId };
+  const result = await getTeams(dto);
 
   res
     .status(result.status)
     .json({ message: result.message, data: result.data });
-  return;
 };
 
-export const deleteTeam = async (
+export const deleteTeamController = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  const id = (req as AuthenticatedRequest).user!.id;
+  const ownerId = (req as AuthenticatedRequest).user!.id;
   const teamId = Number(req.params.teamId);
 
-  const result = await deleteTeamService({ teamId, ownerId: id });
+  const dto: DeleteTeamDTO = { teamId, ownerId };
+  const result = await deleteTeam(dto);
 
   res.status(200).json({ message: `${result.teamName} 팀이 삭제되었습니다.` });
 };
 
-export const getTeamMembers = async (
+export const getTeamMembersController = async (
   req: Request,
   res: Response
 ): Promise<void> => {
   const requesterId = (req as AuthenticatedRequest).user!.id;
   const teamId = Number(req.params.teamId);
 
-  const result = await getTeamMembersService({ teamId, requesterId });
+  const dto: GetTeamMembersDTO = { teamId, requesterId };
+  const result = await getTeamMembers(dto);
 
   res
     .status(result.status)
     .json({ message: result.message, data: result.data });
 };
 
-export const registerMember = async (
+export const registerMemberController = async (
   req: Request,
   res: Response
 ): Promise<void> => {
@@ -71,14 +80,15 @@ export const registerMember = async (
   const teamId = Number(req.params.teamId);
   const { newMemberId } = req.body;
 
-  const result = await registerMemberService({ teamId, ownerId, newMemberId });
+  const dto: RegisterMemberDTO = { teamId, ownerId, newMemberId };
+  const result = await registerMember(dto);
 
   res
     .status(result.status)
     .json({ message: result.message, data: result.data });
 };
 
-export const deleteTeamMember = async (
+export const deleteTeamMemberController = async (
   req: Request,
   res: Response
 ): Promise<void> => {
@@ -86,10 +96,10 @@ export const deleteTeamMember = async (
   const teamId = Number(req.params.teamId);
   const { memberId } = req.body;
 
-  const result = await deleteTeamMemberService({ teamId, ownerId, memberId });
+  const dto: DeleteTeamMemberDTO = { teamId, ownerId, memberId };
+  const result = await deleteTeamMember(dto);
 
   res.status(200).json({
     message: `${result.userName}이 ${result.teamName}에서 삭제되었습니다.`,
   });
-  return;
 };

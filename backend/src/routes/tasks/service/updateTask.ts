@@ -1,8 +1,9 @@
 import { updateUserTask, updateTeamTask } from '../model';
 import { connection } from '@/database/mariadb';
-import { validateTeamAccess } from '@/routes/teams/service/validateTeamAccess';
 import { MessageResponse } from '@/types/common';
-import { validateTaskAccess } from './validateTaskAccess';
+import { validateTaskAccess } from '@/service/accessControl/validateTaskAccess';
+import { HTTPError } from '@/utils/httpError';
+import { UpdateTaskDTO } from '../types';
 
 export const updateTaskService = async ({
   taskId,
@@ -10,20 +11,17 @@ export const updateTaskService = async ({
   teamId,
   contents,
   duration,
-}: {
-  taskId: number;
-  userId: number;
-  teamId?: number;
-  contents: string;
-  duration: number;
-}): Promise<MessageResponse> => {
-  if (!teamId) {
-    await validateTaskAccess(connection, taskId, userId);
+}: UpdateTaskDTO): Promise<MessageResponse> => {
+  const accessGranted = await validateTaskAccess(
+    connection,
+    taskId,
+    userId,
+    teamId
+  );
+  if (!accessGranted) {
+    throw new HTTPError(403, '해당 작업에 대한 권한이 없습니다.');
   }
 
-  if (teamId) {
-    await validateTeamAccess(connection, teamId, userId);
-  }
   const updatedTask = teamId
     ? await updateTeamTask(connection, { taskId, contents, duration, teamId })
     : await updateUserTask(connection, { taskId, contents, duration, userId });

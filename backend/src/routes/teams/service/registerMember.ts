@@ -1,6 +1,6 @@
 import { StatusCodes } from 'http-status-codes';
 import { RegisterMemberDTO } from '../types';
-import { selectTeamById, selectUserByUserId, insertTeamMember } from '../model';
+import { selectTeamById, selectUserByName, insertTeamMember } from '../model';
 import { HTTPError } from '@/utils/httpError';
 import { MessageResponse } from '@/types/common';
 
@@ -20,7 +20,7 @@ export const registerMember = async ({
     );
   }
 
-  const user = await selectUserByUserId(newMemberId);
+  const user = await selectUserByName(newMemberId);
   if (!user) throw new HTTPError(404, '추가할 사용자를 찾을 수 없습니다.');
 
   await insertTeamMember(teamId, user.id);

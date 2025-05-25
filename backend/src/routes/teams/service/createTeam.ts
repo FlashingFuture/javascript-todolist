@@ -1,16 +1,15 @@
-import { StatusCodes } from 'http-status-codes';
-import { createTeam } from '../model';
+import { insertTeam } from '../model';
 import { InternalRegisterDTO } from '../types';
 import { MessageResponse } from '@/types/common';
 
-export const registerTeam = async ({
+export const createTeam = async ({
   teamId,
   ownerId,
 }: InternalRegisterDTO): Promise<MessageResponse> => {
-  const createdTeam = await createTeam(teamId, ownerId);
+  const createdTeam = await insertTeam(teamId, ownerId);
 
   return {
-    status: StatusCodes.CREATED,
+    status: 201,
     message: `${teamId} 팀이 만들어졌습니다.`,
     data: createdTeam,
   };

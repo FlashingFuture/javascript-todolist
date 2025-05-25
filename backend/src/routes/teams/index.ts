@@ -11,31 +11,36 @@ import { authRequired } from '@/middlewares/authRequired';
 
 const router = express.Router();
 
-router.post('/', authRequired(true), ...registerTeamValidator, users.registerTeam);
-router.get('/', authRequired(true), users.getUsersTeams);
+router.post(
+  '/',
+  authRequired(true),
+  ...registerTeamValidator,
+  users.createTeamController
+);
+router.get('/', authRequired(true), users.getTeamsController);
 router.delete(
   '/:teamId',
   authRequired(true),
   ...deleteTeamValidator,
-  users.deleteTeam
+  users.deleteTeamController
 );
 router.get(
   '/members/:teamId',
   authRequired(true),
   ...getMembersValidator,
-  users.getTeamMembers
+  users.getTeamMembersController
 );
 router.post(
   '/members/:teamId',
   authRequired(true),
   ...registerMemberValidator,
-  users.registerMember
+  users.registerMemberController
 );
 router.delete(
   '/members/:teamId',
   authRequired(true),
   ...deleteMemberValidator,
-  users.deleteTeamMember
+  users.deleteTeamMemberController
 );
 
 export default router;

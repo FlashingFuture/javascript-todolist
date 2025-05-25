@@ -1,25 +1,28 @@
 import { connection } from '@/database/mariadb';
 import { deleteUserTask, deleteTeamTask } from '../model';
-import { validateTeamAccess } from '@/routes/teams/service/validateTeamAccess';
 import type { MessageResponse } from '@/types/common';
 import { HTTPError } from '@/utils/httpError';
-import { validateTaskAccess } from './validateTaskAccess';
+import { validateTaskAccess } from '@/service/accessControl/validateTaskAccess';
+import { DeleteTaskDTO } from '../types';
 
-export const deleteTaskService = async ({
+export const deleteTask = async ({
   taskId,
   userId,
   teamId,
-}: {
-  taskId: number;
-  userId: number;
-  teamId?: number;
-}): Promise<MessageResponse> => {
+}: DeleteTaskDTO): Promise<MessageResponse> => {
+  const accessGranted = await validateTaskAccess(
+    connection,
+    taskId,
+    userId,
+    teamId
+  );
+  if (!accessGranted) {
+    throw new HTTPError(403, '해당 작업에 대한 권한이 없습니다.');
+  }
   let deleted = false;
   if (teamId) {
-    await validateTeamAccess(connection, teamId, userId);
     deleted = await deleteTeamTask(connection, taskId, teamId);
   } else {
-    await validateTaskAccess(connection, taskId, userId);
     deleted = await deleteUserTask(connection, taskId, userId);
   }
 

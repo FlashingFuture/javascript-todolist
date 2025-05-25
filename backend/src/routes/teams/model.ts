@@ -1,7 +1,7 @@
 import { connection } from '@/database/mariadb';
 import { ResultSetHeader, RowDataPacket } from 'mysql2';
 
-export const createTeam = async (
+export const insertTeam = async (
   teamName: string,
   ownerId: number
 ): Promise<{ id: number; name: string }> => {
@@ -69,7 +69,7 @@ export const selectTeamById = async (teamId: number) => {
   }
 };
 
-export const deleteTeamByTeamId = async (teamId: number) => {
+export const deleteTeamById = async (teamId: number) => {
   const conn = await connection.getConnection();
 
   try {
@@ -112,7 +112,7 @@ export const selectUserById = async (id: number) => {
   }
 };
 
-export const selectUserByUserId = async (userId: string) => {
+export const selectUserByName = async (userId: string) => {
   const conn = await connection.getConnection();
   try {
     const sql = 'SELECT id, name FROM users WHERE name = ?';
@@ -122,6 +122,10 @@ export const selectUserByUserId = async (userId: string) => {
     conn.release();
   }
 };
+
+export const selectMemberByIds = async (id: number, teamId: number) => {
+  
+}
 
 export const insertTeamMember = async (
   teamId: number,
