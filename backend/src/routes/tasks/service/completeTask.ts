@@ -2,34 +2,35 @@ import { connection } from '@/database/mariadb';
 import { HTTPError } from '@/utils/httpError';
 import { MessageResponse } from '@/types/common';
 import { completeTeamTask, completeUserTask } from '../model';
-import { validateTeamAccess } from '@/routes/teams/service/validateTeamAccess';
-import { validateTaskAccess } from './validateTaskAccess';
+import { validateTaskAccess } from '@/service/accessControl/validateTaskAccess';
+import { CompleteTaskDTO } from '../types';
 
-export const completeTaskService = async ({
+export const completeTask = async ({
   taskId,
   userId,
   teamId,
-}: {
-  taskId: number;
-  userId: number;
-  teamId?: number;
-}): Promise<MessageResponse> => {
-  let contents: string | null;
-
-  if (teamId) {
-    await validateTeamAccess(connection, teamId, userId);
-    contents = await completeTeamTask(connection, taskId, teamId);
-  } else {
-    await validateTaskAccess(connection, taskId, userId);
-    contents = await completeUserTask(connection, taskId, userId);
+}: CompleteTaskDTO): Promise<MessageResponse> => {
+  const accessGranted = await validateTaskAccess(
+    connection,
+    taskId,
+    userId,
+    teamId
+  );
+  if (!accessGranted) {
+    throw new HTTPError(403, '해당 작업에 대한 권한이 없습니다.');
   }
 
-  if (!contents) {
+  const completedTask = teamId
+    ? await completeTeamTask(connection, taskId, teamId)
+    : await completeUserTask(connection, taskId, userId);
+
+  if (!completeTask) {
     throw new HTTPError(404, '해당 할 일을 찾을 수 없습니다.');
   }
 
   return {
     status: 201,
-    message: `${contents}이 완료 상태로 바뀌었습니다.`,
+    message: `할 일이 완료 상태로 바뀌었습니다.`,
+    data: completedTask,
   };
 };

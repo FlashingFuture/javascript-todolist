@@ -1,7 +1,7 @@
 import type { ResultSetHeader, RowDataPacket } from 'mysql2';
 import type { Pool } from 'mysql2/promise';
 
-export const createUser = async (
+export const insertUser = async (
   db: Pool,
   user: {
     userId: string;

@@ -1,4 +1,4 @@
-import { selectTeamById, deleteTeamByTeamId } from '../model';
+import { selectTeamById, deleteTeamById } from '../model';
 import { DeleteTeamDTO } from '../types';
 import { HTTPError } from '@/utils/httpError';
 
@@ -15,7 +15,7 @@ export const deleteTeam = async ({
     throw new HTTPError(403, '팀장만 팀을 삭제할 수 있습니다.');
   }
 
-  await deleteTeamByTeamId(teamId);
+  await deleteTeamById(teamId);
 
   return { teamName: team.name };
 };

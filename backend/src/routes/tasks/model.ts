@@ -50,7 +50,6 @@ export const insertTeamTask = async (
       contents,
       duration,
     ]);
-    console.log(result);
     return {
       teamId,
       id: result.insertId,
@@ -64,9 +63,7 @@ export const insertTeamTask = async (
 export const selectUserTasks = async (
   db: Pool,
   userId: number
-): Promise<
-  { taskId: number; contents: string; dueDate: number; isDone: boolean }[]
-> => {
+): Promise<RowDataPacket[]> => {
   const conn = await db.getConnection();
   try {
     const sql = `
@@ -76,7 +73,7 @@ export const selectUserTasks = async (
       ORDER BY due_date ASC
     `;
     const [rows] = await conn.query<RowDataPacket[]>(sql, [userId]);
-    return rows as any;
+    return rows;
   } finally {
     conn.release();
   }
@@ -85,9 +82,7 @@ export const selectUserTasks = async (
 export const selectTeamTasks = async (
   db: Pool,
   teamId: number
-): Promise<
-  { taskId: number; contents: string; dueDate: number; isDone: boolean }[]
-> => {
+): Promise<RowDataPacket[]> => {
   const conn = await db.getConnection();
   try {
     const sql = `
@@ -97,7 +92,7 @@ export const selectTeamTasks = async (
       ORDER BY due_date ASC
     `;
     const [rows] = await conn.query<RowDataPacket[]>(sql, [teamId]);
-    return rows as any;
+    return rows;
   } finally {
     conn.release();
   }
@@ -186,7 +181,6 @@ export const deleteUserTask = async (
       `DELETE FROM user_tasks WHERE id = ? AND user_id = ?`,
       [taskId, userId]
     );
-    console.log(result);
     return result.affectedRows > 0;
   } finally {
     conn.release();
@@ -204,7 +198,6 @@ export const deleteTeamTask = async (
       `DELETE FROM team_tasks WHERE id = ? AND team_id = ?`,
       [taskId, teamId]
     );
-    console.log(result);
     return result.affectedRows > 0;
   } finally {
     conn.release();
@@ -215,7 +208,7 @@ export const completeUserTask = async (
   db: Pool,
   taskId: number,
   userId: number
-): Promise<string | null> => {
+): Promise<RowDataPacket | null> => {
   const conn = await db.getConnection();
   try {
     const [rows] = await conn.query<RowDataPacket[]>(
@@ -224,14 +217,13 @@ export const completeUserTask = async (
     );
 
     if (!Array.isArray(rows) || rows.length === 0) return null;
-    const contents = rows[0].contents;
 
     await conn.query(
       `UPDATE user_tasks SET is_done = 1 WHERE id = ? AND user_id = ?`,
       [taskId, userId]
     );
 
-    return contents;
+    return rows[0];
   } finally {
     conn.release();
   }
@@ -241,7 +233,7 @@ export const completeTeamTask = async (
   db: Pool,
   taskId: number,
   teamId: number
-): Promise<string | null> => {
+): Promise<RowDataPacket | null> => {
   const conn = await db.getConnection();
   try {
     const [rows] = await conn.query<RowDataPacket[]>(
@@ -250,14 +242,13 @@ export const completeTeamTask = async (
     );
 
     if (!Array.isArray(rows) || rows.length === 0) return null;
-    const contents = rows[0].contents;
 
     await conn.query(
       `UPDATE team_tasks SET is_done = 1 WHERE id = ? AND team_id = ?`,
       [taskId, teamId]
     );
 
-    return contents;
+    return rows[0];
   } finally {
     conn.release();
   }

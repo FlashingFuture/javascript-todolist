@@ -2,11 +2,7 @@ import { StatusCodes } from 'http-status-codes';
 import { MessageResponse } from '@/types/common';
 import { selectTeamById, selectMembersByTeamId } from '../model';
 import { HTTPError } from '@/utils/httpError';
-
-interface GetTeamMembersDTO {
-  teamId: number;
-  requesterId: number;
-}
+import { GetTeamMembersDTO } from '../types';
 
 export const getTeamMembers = async ({
   teamId,
