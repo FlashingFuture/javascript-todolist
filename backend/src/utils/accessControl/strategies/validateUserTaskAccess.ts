@@ -1,4 +1,4 @@
-import { Pool } from 'mysql2/promise';
+import type { Pool } from 'mysql2/promise';
 import { RowDataPacket } from 'mysql2';
 
 export const validateUserTaskAccess = async (

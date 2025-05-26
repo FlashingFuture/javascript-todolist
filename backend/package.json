@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "test": "jest",
+    "test": "jest --runInBand",
     "start": "npm run build && node dist/server.js",
     "build": "tsc",
     "dev": "nodemon --exec ts-node src/server.ts"
