@@ -1,5 +1,5 @@
 jest.mock('@/routes/users/model', () => ({
-  createUser: jest.fn(),
+  insertUser: jest.fn(),
 }));
 
 import { register } from '@/routes/users/service/register';

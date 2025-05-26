@@ -1,12 +1,13 @@
 import { insertTeam } from '../model';
 import { InternalRegisterDTO } from '../types';
 import { MessageResponse } from '@/types/common';
+import { connection } from '@/database/mariadb';
 
 export const createTeam = async ({
   teamId,
   ownerId,
 }: InternalRegisterDTO): Promise<MessageResponse> => {
-  const createdTeam = await insertTeam(teamId, ownerId);
+  const createdTeam = await insertTeam(connection, teamId, ownerId);
 
   return {
     status: 201,

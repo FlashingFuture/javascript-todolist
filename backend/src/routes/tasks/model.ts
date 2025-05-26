@@ -1,3 +1,4 @@
+import { Result } from 'express-validator';
 import type { ResultSetHeader, RowDataPacket } from 'mysql2';
 import type { Pool } from 'mysql2/promise';
 
@@ -123,7 +124,15 @@ export const updateUserTask = async (
 
   const conn = await db.getConnection();
   try {
-    await conn.query(updateSql, [contents, duration, taskId, userId]);
+    const [updateResult] = await conn.query<ResultSetHeader>(updateSql, [
+      contents,
+      duration,
+      taskId,
+      userId,
+    ]);
+
+    if (updateResult.affectedRows === 0) return null;
+
     const [rows] = await conn.query<RowDataPacket[]>(selectSql, [
       taskId,
       userId,
@@ -159,7 +168,15 @@ export const updateTeamTask = async (
 
   const conn = await db.getConnection();
   try {
-    await conn.query(updateSql, [contents, duration, taskId, teamId]);
+    const [updateResult] = await conn.query<ResultSetHeader>(updateSql, [
+      contents,
+      duration,
+      taskId,
+      teamId,
+    ]);
+
+    if (updateResult.affectedRows === 0) return null;
+
     const [rows] = await conn.query<RowDataPacket[]>(selectSql, [
       taskId,
       teamId,
@@ -204,11 +221,11 @@ export const deleteTeamTask = async (
   }
 };
 
-export const completeUserTask = async (
+export const finishUserTask = async (
   db: Pool,
   taskId: number,
   userId: number
-): Promise<RowDataPacket | null> => {
+): Promise<{ taskId: number; isDone: boolean } | null> => {
   const conn = await db.getConnection();
   try {
     const [rows] = await conn.query<RowDataPacket[]>(
@@ -218,22 +235,24 @@ export const completeUserTask = async (
 
     if (!Array.isArray(rows) || rows.length === 0) return null;
 
-    await conn.query(
+    const [result] = await conn.query<ResultSetHeader>(
       `UPDATE user_tasks SET is_done = 1 WHERE id = ? AND user_id = ?`,
       [taskId, userId]
     );
 
-    return rows[0];
+    if (result.affectedRows === 0) return null;
+
+    return { taskId, isDone: true };
   } finally {
     conn.release();
   }
 };
 
-export const completeTeamTask = async (
+export const finishTeamTask = async (
   db: Pool,
   taskId: number,
   teamId: number
-): Promise<RowDataPacket | null> => {
+): Promise<{ teamId: number; taskId: number; isDone: boolean } | null> => {
   const conn = await db.getConnection();
   try {
     const [rows] = await conn.query<RowDataPacket[]>(
@@ -243,12 +262,14 @@ export const completeTeamTask = async (
 
     if (!Array.isArray(rows) || rows.length === 0) return null;
 
-    await conn.query(
+    const [result] = await conn.query<ResultSetHeader>(
       `UPDATE team_tasks SET is_done = 1 WHERE id = ? AND team_id = ?`,
       [taskId, teamId]
     );
 
-    return rows[0];
+    if (result.affectedRows === 0) return null;
+
+    return { teamId, taskId, isDone: true };
   } finally {
     conn.release();
   }
