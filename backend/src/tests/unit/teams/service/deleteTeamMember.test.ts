@@ -11,13 +11,14 @@ import {
   deleteTeamMemberByUserId,
 } from '@/routes/teams/model';
 import { HTTPError } from '@/utils/httpError';
+import { testConnection } from '@/database/testDB';
 
 describe('deleteTeamMember()', () => {
   test('존재하지 않는 팀일 경우 404 에러 반환', async () => {
     (selectTeamById as jest.Mock).mockResolvedValue(undefined);
 
     await expect(
-      deleteTeamMember({ teamId: 1, ownerId: 10, memberId: 2 })
+      deleteTeamMember(testConnection, { teamId: 1, ownerId: 10, memberId: 2 })
     ).rejects.toThrow(new HTTPError(404, '팀을 찾을 수 없습니다.'));
   });
 
@@ -29,7 +30,7 @@ describe('deleteTeamMember()', () => {
     });
 
     await expect(
-      deleteTeamMember({ teamId: 1, ownerId: 10, memberId: 2 })
+      deleteTeamMember(testConnection, { teamId: 1, ownerId: 10, memberId: 2 })
     ).rejects.toThrow(new HTTPError(403, '팀장만 팀원을 삭제할 수 있습니다.'));
   });
 
@@ -42,7 +43,7 @@ describe('deleteTeamMember()', () => {
     (selectTeamMemberById as jest.Mock).mockResolvedValue(undefined);
 
     await expect(
-      deleteTeamMember({ teamId: 1, ownerId: 10, memberId: 2 })
+      deleteTeamMember(testConnection, { teamId: 1, ownerId: 10, memberId: 2 })
     ).rejects.toThrow(new HTTPError(404, '삭제할 사용자를 찾을 수 없습니다.'));
   });
 
@@ -59,7 +60,7 @@ describe('deleteTeamMember()', () => {
 
     (deleteTeamMemberByUserId as jest.Mock).mockResolvedValue(undefined);
 
-    const result = await deleteTeamMember({
+    const result = await deleteTeamMember(testConnection, {
       teamId: 1,
       ownerId: 10,
       memberId: 2,

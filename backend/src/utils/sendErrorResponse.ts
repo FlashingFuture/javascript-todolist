@@ -1,6 +1,5 @@
-import { Response } from "express";
-import { HTTPError } from "./httpError";
-import { StatusCodes } from "http-status-codes";
+import { Response } from 'express';
+import { HTTPError } from './httpError';
 
 export const sendErrorResponse = (res: Response, error: unknown): void => {
   if (error instanceof HTTPError) {
@@ -9,13 +8,14 @@ export const sendErrorResponse = (res: Response, error: unknown): void => {
   }
 
   if (error instanceof Error) {
-    res
-      .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .json({ message: error.message });
+    if ((error as any).code === 'ER_DUP_ENTRY') {
+      res.status(409).json({ message: '이미 존재하는 유니크 값입니다.' });
+      return;
+    }
+
+    res.status(500).json({ message: error.message });
     return;
   }
 
-  res
-    .status(StatusCodes.INTERNAL_SERVER_ERROR)
-    .json({ message: "알 수 없는 오류입니다." });
+  res.status(500).json({ message: '알 수 없는 오류입니다.' });
 };

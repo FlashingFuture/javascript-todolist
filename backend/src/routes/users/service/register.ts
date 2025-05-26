@@ -4,13 +4,12 @@ import { MessageResponse } from '@/types/common';
 import { HTTPError } from '@/utils/httpError';
 import { hashPassword } from '@/utils/password';
 import { insertUser } from '../model';
-import { connection } from '@/database/mariadb';
+import { Pool } from 'mysql2/promise';
 
-export const register = async ({
-  userId,
-  password,
-  rePassword,
-}: RegisterDTO): Promise<MessageResponse> => {
+export const register = async (
+  db: Pool,
+  { userId, password, rePassword }: RegisterDTO
+): Promise<MessageResponse> => {
   if (password !== rePassword) {
     throw new HTTPError(
       StatusCodes.BAD_REQUEST,
@@ -19,7 +18,7 @@ export const register = async ({
   }
 
   const { passwordHash, salt } = hashPassword(password);
-  const createdUser = await insertUser(connection, {
+  const createdUser = await insertUser(db, {
     userId,
     password: passwordHash,
     salt,

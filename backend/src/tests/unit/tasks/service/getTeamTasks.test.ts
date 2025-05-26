@@ -1,5 +1,6 @@
 import { getTeamTasks } from '@/routes/tasks/service/getTasks';
 import { selectTeamTasks } from '@/routes/tasks/model';
+import { testConnection } from '@/database/testDB';
 
 jest.mock('@/routes/tasks/model', () => ({
   selectTeamTasks: jest.fn(),
@@ -12,7 +13,7 @@ describe('getTeamTasks()', () => {
       { taskId: 4, contents: 'y', isDone: true },
     ]);
 
-    const result = await getTeamTasks({ teamId: 10 });
+    const result = await getTeamTasks(testConnection, { teamId: 10 });
 
     expect(result.status).toBe(200);
     expect(result.message).toBe('조회 성공');

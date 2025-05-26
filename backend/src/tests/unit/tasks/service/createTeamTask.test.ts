@@ -2,6 +2,7 @@ import { createTeamTask } from '@/routes/tasks/service/createTask';
 import { insertTeamTask } from '@/routes/tasks/model';
 import { validateTeamAccess } from '@/utils/accessControl/strategies/validateTeamAccess';
 import { HTTPError } from '@/utils/httpError';
+import { testConnection } from '@/database/testDB';
 
 jest.mock('@/routes/tasks/model', () => ({
   insertTeamTask: jest.fn(),
@@ -16,7 +17,12 @@ describe('createTeamTask()', () => {
     (validateTeamAccess as jest.Mock).mockResolvedValue(false);
 
     await expect(
-      createTeamTask({ teamId: 1, userId: 2, contents: 'task', duration: 5 })
+      createTeamTask(testConnection, {
+        teamId: 1,
+        userId: 2,
+        contents: 'task',
+        duration: 5,
+      })
     ).rejects.toThrow(
       new HTTPError(403, '해당 팀에 할 일을 추가할 권한이 없습니다.')
     );
@@ -30,7 +36,7 @@ describe('createTeamTask()', () => {
       contents: 'task',
     });
 
-    const result = await createTeamTask({
+    const result = await createTeamTask(testConnection, {
       teamId: 1,
       userId: 2,
       contents: 'task',

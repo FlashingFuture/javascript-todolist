@@ -2,6 +2,7 @@ import { updateUserTaskService } from '@/routes/tasks/service/updateTask';
 import { updateUserTask } from '@/routes/tasks/model';
 import { validateTaskAccess } from '@/utils/accessControl/validateTaskAccess';
 import { HTTPError } from '@/utils/httpError';
+import { testConnection } from '@/database/testDB';
 
 jest.mock('@/routes/tasks/model', () => ({
   updateUserTask: jest.fn(),
@@ -15,7 +16,7 @@ describe('updateUserTaskService', () => {
     (validateTaskAccess as jest.Mock).mockResolvedValue(false);
 
     await expect(
-      updateUserTaskService({
+      updateUserTaskService(testConnection, {
         taskId: 1,
         contents: 'updated',
         duration: 3,
@@ -29,7 +30,7 @@ describe('updateUserTaskService', () => {
     (updateUserTask as jest.Mock).mockResolvedValue(null);
 
     await expect(
-      updateUserTaskService({
+      updateUserTaskService(testConnection, {
         taskId: 1,
         contents: 'updated',
         duration: 3,
@@ -47,7 +48,7 @@ describe('updateUserTaskService', () => {
       isDone: false,
     });
 
-    const result = await updateUserTaskService({
+    const result = await updateUserTaskService(testConnection, {
       taskId: 1,
       contents: 'updated',
       duration: 3,

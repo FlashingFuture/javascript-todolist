@@ -14,6 +14,7 @@ import { login } from '@/routes/users/service/login';
 import { selectUser } from '@/routes/users/model';
 import { verifyPassword } from '@/utils/password';
 import { signToken } from '@/utils/token';
+import { testConnection } from '@/database/testDB';
 
 describe('login()', () => {
   const baseDTO = {
@@ -28,7 +29,7 @@ describe('login()', () => {
   test('존재하지 않는 유저일 경우 401 에러', async () => {
     (selectUser as jest.Mock).mockResolvedValue(null);
 
-    await expect(login(baseDTO)).rejects.toThrow(
+    await expect(login(testConnection, baseDTO)).rejects.toThrow(
       /로그인 정보가 잘못되었습니다/
     );
   });
@@ -43,7 +44,7 @@ describe('login()', () => {
 
     (verifyPassword as jest.Mock).mockReturnValue(false);
 
-    await expect(login(baseDTO)).rejects.toThrow(
+    await expect(login(testConnection, baseDTO)).rejects.toThrow(
       /로그인 정보가 잘못되었습니다/
     );
   });
@@ -59,7 +60,7 @@ describe('login()', () => {
     (verifyPassword as jest.Mock).mockReturnValue(true);
     (signToken as jest.Mock).mockReturnValue('mocked_token');
 
-    const result = await login(baseDTO);
+    const result = await login(testConnection, baseDTO);
 
     expect(result.status).toBe(200);
     expect(result.message).toMatch(/성공/);

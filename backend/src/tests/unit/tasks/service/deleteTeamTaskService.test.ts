@@ -2,6 +2,7 @@ import { deleteTeamTaskService } from '@/routes/tasks/service/deleteTask';
 import { deleteTeamTask } from '@/routes/tasks/model';
 import { validateTaskAccess } from '@/utils/accessControl/validateTaskAccess';
 import { HTTPError } from '@/utils/httpError';
+import { testConnection } from '@/database/testDB';
 
 jest.mock('@/routes/tasks/model', () => ({
   deleteTeamTask: jest.fn(),
@@ -16,7 +17,11 @@ describe('deleteTeamTaskService()', () => {
     (validateTaskAccess as jest.Mock).mockResolvedValue(false);
 
     await expect(
-      deleteTeamTaskService({ taskId: 1, teamId: 10, userId: 2 })
+      deleteTeamTaskService(testConnection, {
+        taskId: 1,
+        teamId: 10,
+        userId: 2,
+      })
     ).rejects.toThrow(new HTTPError(403, '해당 작업에 대한 권한이 없습니다.'));
   });
 
@@ -25,7 +30,11 @@ describe('deleteTeamTaskService()', () => {
     (deleteTeamTask as jest.Mock).mockResolvedValue(false);
 
     await expect(
-      deleteTeamTaskService({ taskId: 1, teamId: 10, userId: 2 })
+      deleteTeamTaskService(testConnection, {
+        taskId: 1,
+        teamId: 10,
+        userId: 2,
+      })
     ).rejects.toThrow(new HTTPError(404, '해당 할 일을 찾을 수 없습니다.'));
   });
 
@@ -33,7 +42,7 @@ describe('deleteTeamTaskService()', () => {
     (validateTaskAccess as jest.Mock).mockResolvedValue(true);
     (deleteTeamTask as jest.Mock).mockResolvedValue(true);
 
-    const result = await deleteTeamTaskService({
+    const result = await deleteTeamTaskService(testConnection, {
       taskId: 1,
       teamId: 10,
       userId: 2,
