@@ -1,13 +1,13 @@
 import express from 'express';
 import * as tasks from './controller';
 import { authRequired } from '@/middlewares/authRequired';
-import { registerValidator, updateTaskValidator } from './validator';
+import { createTaskValidator, updateTaskValidator } from './validator';
 
 const router = express.Router();
 router.post(
   '/',
   authRequired(true),
-  registerValidator,
+  createTaskValidator,
   tasks.createTaskController
 );
 router.get('/', authRequired(true), tasks.getTasksController);
