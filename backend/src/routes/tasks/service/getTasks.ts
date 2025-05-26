@@ -1,12 +1,13 @@
 import { MessageResponse } from '@/types/common';
 import { GetTeamTaskDTO, GetUserTaskDTO } from '../types';
 import { selectTeamTasks, selectUserTasks } from '../model';
-import { connection } from '@/database/mariadb';
+import type { Pool } from 'mysql2/promise';
 
-export const getUserTasks = async ({
-  userId,
-}: GetUserTaskDTO): Promise<MessageResponse> => {
-  const tasks = await selectUserTasks(connection, userId);
+export const getUserTasks = async (
+  db: Pool,
+  { userId }: GetUserTaskDTO
+): Promise<MessageResponse> => {
+  const tasks = await selectUserTasks(db, userId);
   const tasksDone = tasks.filter((task) => task.isDone);
   const tasksTodo = tasks.filter((task) => !task.isDone);
 
@@ -17,10 +18,11 @@ export const getUserTasks = async ({
   };
 };
 
-export const getTeamTasks = async ({
-  teamId,
-}: GetTeamTaskDTO): Promise<MessageResponse> => {
-  const tasks = await selectTeamTasks(connection, teamId);
+export const getTeamTasks = async (
+  db: Pool,
+  { teamId }: GetTeamTaskDTO
+): Promise<MessageResponse> => {
+  const tasks = await selectTeamTasks(db, teamId);
   const tasksDone = tasks.filter((task) => task.isDone);
   const tasksTodo = tasks.filter((task) => !task.isDone);
 

@@ -1,22 +1,20 @@
 import { updateUserTask, updateTeamTask } from '../model';
-import { connection } from '@/database/mariadb';
+import type { Pool } from 'mysql2/promise';
 import { MessageResponse } from '@/types/common';
 import { validateTaskAccess } from '@/utils/accessControl/validateTaskAccess';
 import { HTTPError } from '@/utils/httpError';
 import { UpdateTeamTaskDTO, UpdateUserTaskDTO } from '../types';
 
-export const updateUserTaskService = async ({
-  taskId,
-  contents,
-  duration,
-  userId,
-}: UpdateUserTaskDTO): Promise<MessageResponse> => {
-  const accessGranted = await validateTaskAccess(connection, taskId, userId);
+export const updateUserTaskService = async (
+  db: Pool,
+  { taskId, contents, duration, userId }: UpdateUserTaskDTO
+): Promise<MessageResponse> => {
+  const accessGranted = await validateTaskAccess(db, taskId, userId);
   if (!accessGranted) {
     throw new HTTPError(403, '해당 작업에 대한 권한이 없습니다.');
   }
 
-  const updatedTask = await updateUserTask(connection, {
+  const updatedTask = await updateUserTask(db, {
     taskId,
     contents,
     duration,
@@ -34,24 +32,16 @@ export const updateUserTaskService = async ({
   };
 };
 
-export const updateTeamTaskService = async ({
-  taskId,
-  contents,
-  duration,
-  teamId,
-  userId,
-}: UpdateTeamTaskDTO): Promise<MessageResponse> => {
-  const accessGranted = await validateTaskAccess(
-    connection,
-    taskId,
-    userId,
-    teamId
-  );
+export const updateTeamTaskService = async (
+  db: Pool,
+  { taskId, contents, duration, teamId, userId }: UpdateTeamTaskDTO
+): Promise<MessageResponse> => {
+  const accessGranted = await validateTaskAccess(db, taskId, userId, teamId);
   if (!accessGranted) {
     throw new HTTPError(403, '해당 작업에 대한 권한이 없습니다.');
   }
 
-  const updatedTask = await updateTeamTask(connection, {
+  const updatedTask = await updateTeamTask(db, {
     taskId,
     contents,
     duration,

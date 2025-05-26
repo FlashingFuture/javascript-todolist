@@ -28,17 +28,18 @@ export const createTaskController = async (
   req: Request,
   res: Response
 ): Promise<void> => {
+  const db = req.app.locals.db;
   const userId = (req as AuthenticatedRequest).user!.id;
   const { teamId, contents, duration } = req.body;
 
   const result = teamId
-    ? await createTeamTask({
+    ? await createTeamTask(db, {
         teamId,
         userId,
         contents,
         duration,
       } as CreateTeamTaskDTO)
-    : await createUserTask({
+    : await createUserTask(db, {
         userId,
         contents,
         duration,
@@ -53,12 +54,14 @@ export const getTasksController = async (
   req: Request,
   res: Response
 ): Promise<void> => {
+  const db = req.app.locals.db;
+
   const userId = (req as AuthenticatedRequest).user!.id;
   const teamId = req.query.teamId ? Number(req.query.teamId) : undefined;
 
   const result = teamId
-    ? await getTeamTasks({ teamId } as GetTeamTaskDTO)
-    : await getUserTasks({ userId } as GetUserTaskDTO);
+    ? await getTeamTasks(db, { teamId } as GetTeamTaskDTO)
+    : await getUserTasks(db, { userId } as GetUserTaskDTO);
 
   res
     .status(result.status)
@@ -66,19 +69,21 @@ export const getTasksController = async (
 };
 
 export const updateTaskController = async (req: Request, res: Response) => {
+  const db = req.app.locals.db;
+
   const taskId = Number(req.params.taskId);
   const { contents, duration, teamId } = req.body;
   const userId = (req as AuthenticatedRequest).user!.id;
 
   const result = teamId
-    ? await updateTeamTask({
+    ? await updateTeamTask(db, {
         taskId,
         contents,
         duration,
         teamId,
         userId,
       } as UpdateTeamTaskDTO)
-    : await updateUserTask({
+    : await updateUserTask(db, {
         taskId,
         contents,
         duration,
@@ -94,17 +99,19 @@ export const deleteTaskController = async (
   req: Request,
   res: Response
 ): Promise<void> => {
+  const db = req.app.locals.db;
+
   const userId = (req as AuthenticatedRequest).user!.id;
   const taskId = Number(req.params.taskId);
   const teamId = req.query.teamId ? Number(req.query.teamId) : undefined;
 
   const result = teamId
-    ? await deleteTeamTask({
+    ? await deleteTeamTask(db, {
         taskId,
         teamId,
         userId,
       } as DeleteTeamTaskDTO)
-    : await deleteUserTask({ taskId, userId } as DeleteUserTaskDTO);
+    : await deleteUserTask(db, { taskId, userId } as DeleteUserTaskDTO);
 
   res.status(result.status).json({ message: result.message });
 };
@@ -113,13 +120,19 @@ export const completeTaskController = async (
   req: Request,
   res: Response
 ): Promise<void> => {
+  const db = req.app.locals.db;
+
   const userId = (req as AuthenticatedRequest).user!.id;
   const taskId = Number(req.params.taskId);
   const teamId = req.query.teamId ? Number(req.query.teamId) : undefined;
 
   const result = teamId
-    ? await completeTeamTask({ taskId, teamId, userId } as CompleteTeamTaskDTO)
-    : await completeUserTask({ taskId, userId } as CompleteUserTaskDTO);
+    ? await completeTeamTask(db, {
+        taskId,
+        teamId,
+        userId,
+      } as CompleteTeamTaskDTO)
+    : await completeUserTask(db, { taskId, userId } as CompleteUserTaskDTO);
 
   res.status(result.status).json({ message: result.message });
 };
