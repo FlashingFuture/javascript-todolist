@@ -4,6 +4,7 @@ jest.mock('@/routes/teams/model', () => ({
 
 import { createTeam } from '@/routes/teams/service/createTeam';
 import { insertTeam } from '@/routes/teams/model';
+import { testConnection } from '@/database/testDB';
 
 describe('createTeam()', () => {
   test('정상적으로 팀이 생성되면 응답에 팀 정보와 메시지가 포함되어야 한다', async () => {
@@ -12,7 +13,7 @@ describe('createTeam()', () => {
       name: 'myteam',
     });
 
-    const result = await createTeam({
+    const result = await createTeam(testConnection, {
       teamId: 'myteam',
       ownerId: 42,
     });

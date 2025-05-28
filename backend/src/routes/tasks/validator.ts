@@ -1,7 +1,7 @@
 import { body, param } from 'express-validator';
 import { validateRequest } from '@/middlewares/validateRequest';
 
-export const registerValidator = [
+export const createTaskValidator = [
   body('contents')
     .notEmpty()
     .withMessage('할 일 내용을 입력해주세요.')
@@ -22,6 +22,8 @@ export const registerValidator = [
 export const updateTaskValidator = [
   param('taskId').isInt().withMessage('taskId는 정수여야 합니다.'),
   body('contents').notEmpty().withMessage('할 일 내용을 입력해주세요.'),
-  body('duration').isInt({ min: 1 }).withMessage('duration은 1 이상의 정수여야 합니다.'),
+  body('duration')
+    .isInt({ min: 1 })
+    .withMessage('duration은 1 이상의 정수여야 합니다.'),
   validateRequest,
 ];

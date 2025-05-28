@@ -5,13 +5,12 @@ import { MessageResponse } from '@/types/common';
 import { signToken } from '@/utils/token';
 import { verifyPassword } from '@/utils/password';
 import { selectUser } from '../model';
-import { connection } from '@/database/mariadb';
-
-export const login = async ({
-  userId,
-  password,
-}: LoginDTO): Promise<MessageResponse> => {
-  const user = await selectUser(connection, userId);
+import { Pool } from 'mysql2/promise';
+export const login = async (
+  db: Pool,
+  { userId, password }: LoginDTO
+): Promise<MessageResponse> => {
+  const user = await selectUser(db, userId);
   if (!user) {
     throw new HTTPError(
       StatusCodes.UNAUTHORIZED,

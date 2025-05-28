@@ -4,11 +4,12 @@ jest.mock('@/routes/users/model', () => ({
 
 import { register } from '@/routes/users/service/register';
 import { insertUser } from '@/routes/users/model';
+import { testConnection } from '@/database/testDB';
 
 describe('register()', () => {
   test('비밀번호 불일치 시 400 에러', async () => {
     await expect(
-      register({
+      register(testConnection, {
         userId: 'test',
         password: 'a',
         rePassword: 'b',
@@ -19,7 +20,7 @@ describe('register()', () => {
   test('정상적인 경우 createUser 호출 및 응답 확인', async () => {
     (insertUser as jest.Mock).mockResolvedValue({ id: 1, userId: 'test' });
 
-    const res = await register({
+    const res = await register(testConnection, {
       userId: 'test',
       password: 'pw',
       rePassword: 'pw',

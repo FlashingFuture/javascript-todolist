@@ -13,13 +13,18 @@ import {
   insertTeamMember,
 } from '@/routes/teams/model';
 import { HTTPError } from '@/utils/httpError';
+import { testConnection } from '@/database/testDB';
 
 describe('registerMember()', () => {
   test('존재하지 않는 팀일 경우 404 에러', async () => {
     (selectTeamById as jest.Mock).mockResolvedValue(undefined);
 
     await expect(
-      registerMember({ teamId: 1, ownerId: 10, newMemberId: 'alice' })
+      registerMember(testConnection, {
+        teamId: 1,
+        ownerId: 10,
+        newMemberId: 'alice',
+      })
     ).rejects.toThrow(new HTTPError(404, '팀을 찾을 수 없습니다.'));
   });
 
@@ -31,7 +36,11 @@ describe('registerMember()', () => {
     });
 
     await expect(
-      registerMember({ teamId: 1, ownerId: 10, newMemberId: 'alice' })
+      registerMember(testConnection, {
+        teamId: 1,
+        ownerId: 10,
+        newMemberId: 'alice',
+      })
     ).rejects.toThrow(new HTTPError(403, '팀장만 팀원을 추가할 수 있습니다.'));
   });
 
@@ -44,7 +53,11 @@ describe('registerMember()', () => {
     (selectUserByName as jest.Mock).mockResolvedValue(undefined);
 
     await expect(
-      registerMember({ teamId: 1, ownerId: 10, newMemberId: 'alice' })
+      registerMember(testConnection, {
+        teamId: 1,
+        ownerId: 10,
+        newMemberId: 'alice',
+      })
     ).rejects.toThrow(new HTTPError(404, '추가할 사용자를 찾을 수 없습니다.'));
   });
 
@@ -64,7 +77,11 @@ describe('registerMember()', () => {
     });
 
     await expect(
-      registerMember({ teamId: 1, ownerId: 10, newMemberId: 'alice' })
+      registerMember(testConnection, {
+        teamId: 1,
+        ownerId: 10,
+        newMemberId: 'alice',
+      })
     ).rejects.toThrow(new HTTPError(409, '이미 팀에 속한 사용자입니다.'));
   });
 
@@ -81,7 +98,7 @@ describe('registerMember()', () => {
     (selectTeamMemberById as jest.Mock).mockResolvedValue(undefined);
     (insertTeamMember as jest.Mock).mockResolvedValue(undefined);
 
-    const result = await registerMember({
+    const result = await registerMember(testConnection, {
       teamId: 1,
       ownerId: 10,
       newMemberId: 'alice',

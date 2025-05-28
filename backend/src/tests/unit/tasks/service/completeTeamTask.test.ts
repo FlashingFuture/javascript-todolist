@@ -2,6 +2,7 @@ import { completeTeamTask } from '@/routes/tasks/service/completeTask';
 import { finishTeamTask } from '@/routes/tasks/model';
 import { validateTaskAccess } from '@/utils/accessControl/validateTaskAccess';
 import { HTTPError } from '@/utils/httpError';
+import { testConnection } from '@/database/testDB';
 
 jest.mock('@/routes/tasks/model', () => ({
   finishTeamTask: jest.fn(),
@@ -16,7 +17,7 @@ describe('completeTeamTask()', () => {
     (validateTaskAccess as jest.Mock).mockResolvedValue(false);
 
     await expect(
-      completeTeamTask({ taskId: 1, teamId: 100, userId: 2 })
+      completeTeamTask(testConnection, { taskId: 1, teamId: 100, userId: 2 })
     ).rejects.toThrow(new HTTPError(403, '해당 작업에 대한 권한이 없습니다.'));
   });
 
@@ -25,7 +26,7 @@ describe('completeTeamTask()', () => {
     (finishTeamTask as jest.Mock).mockResolvedValue(null);
 
     await expect(
-      completeTeamTask({ taskId: 1, teamId: 100, userId: 2 })
+      completeTeamTask(testConnection, { taskId: 1, teamId: 100, userId: 2 })
     ).rejects.toThrow(new HTTPError(404, '해당 할 일을 찾을 수 없습니다.'));
   });
 
@@ -37,7 +38,7 @@ describe('completeTeamTask()', () => {
       isDone: true,
     });
 
-    const result = await completeTeamTask({
+    const result = await completeTeamTask(testConnection, {
       taskId: 1,
       teamId: 100,
       userId: 2,

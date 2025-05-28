@@ -2,6 +2,7 @@ import { updateTeamTaskService } from '@/routes/tasks/service/updateTask';
 import { updateTeamTask } from '@/routes/tasks/model';
 import { validateTaskAccess } from '@/utils/accessControl/validateTaskAccess';
 import { HTTPError } from '@/utils/httpError';
+import { testConnection } from '@/database/testDB';
 
 jest.mock('@/routes/tasks/model', () => ({
   updateTeamTask: jest.fn(),
@@ -15,7 +16,7 @@ describe('updateTeamTaskService', () => {
     (validateTaskAccess as jest.Mock).mockResolvedValue(false);
 
     await expect(
-      updateTeamTaskService({
+      updateTeamTaskService(testConnection, {
         taskId: 1,
         contents: 'updated',
         duration: 3,
@@ -30,7 +31,7 @@ describe('updateTeamTaskService', () => {
     (updateTeamTask as jest.Mock).mockResolvedValue(null);
 
     await expect(
-      updateTeamTaskService({
+      updateTeamTaskService(testConnection, {
         taskId: 1,
         contents: 'updated',
         duration: 3,
@@ -49,7 +50,7 @@ describe('updateTeamTaskService', () => {
       isDone: false,
     });
 
-    const result = await updateTeamTaskService({
+    const result = await updateTeamTaskService(testConnection, {
       taskId: 1,
       contents: 'updated',
       duration: 3,

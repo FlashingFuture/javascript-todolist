@@ -1,5 +1,6 @@
 import { createUserTask } from '@/routes/tasks/service/createTask';
 import { insertUserTask } from '@/routes/tasks/model';
+import { testConnection } from '@/database/testDB';
 
 jest.mock('@/routes/tasks/model', () => ({
   insertUserTask: jest.fn(),
@@ -16,7 +17,7 @@ describe('createUserTask()', () => {
       contents: 'task1',
     });
 
-    const result = await createUserTask({
+    const result = await createUserTask(testConnection, {
       userId: 1,
       contents: 'task1',
       duration: 3,

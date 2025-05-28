@@ -8,9 +8,11 @@ export const registerUser = async (
   req: Request,
   res: Response
 ): Promise<void> => {
+  const db = req.app.locals.db;
+
   const { userId, password, rePassword } = req.body;
   const dto: RegisterDTO = { userId, password, rePassword };
-  const result = await register(dto);
+  const result = await register(db, dto);
 
   res
     .status(result.status)
@@ -19,9 +21,11 @@ export const registerUser = async (
 };
 
 export const loginUser = async (req: Request, res: Response): Promise<void> => {
+  const db = req.app.locals.db;
+
   const { userId, password } = req.body;
   const dto: LoginDTO = { userId, password };
-  const result = await login(dto);
+  const result = await login(db, dto);
 
   setAuthCookie(res, result.data.token);
 

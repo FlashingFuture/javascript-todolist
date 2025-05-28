@@ -1,13 +1,13 @@
 import { insertTeam } from '../model';
 import { InternalRegisterDTO } from '../types';
 import { MessageResponse } from '@/types/common';
-import { connection } from '@/database/mariadb';
+import { Pool } from 'mysql2/promise';
 
-export const createTeam = async ({
-  teamId,
-  ownerId,
-}: InternalRegisterDTO): Promise<MessageResponse> => {
-  const createdTeam = await insertTeam(connection, teamId, ownerId);
+export const createTeam = async (
+  db: Pool,
+  { teamId, ownerId }: InternalRegisterDTO
+): Promise<MessageResponse> => {
+  const createdTeam = await insertTeam(db, teamId, ownerId);
 
   return {
     status: 201,
